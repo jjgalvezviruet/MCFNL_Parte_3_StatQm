@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-with open('Data/Results16.csv') as file2:
+with open('Data/Results3.csv') as file2:
     csv_reader = csv.reader(file2, delimiter=',')
     line_count = 0
     data = []
@@ -23,6 +23,12 @@ with open('Data/Results16.csv') as file2:
             
 tiempos = [parameters[1]*i for i in range(0,int(parameters[0]))]
 xrange = np.linspace(-3,3,100)
+
+plt.plot(data[0],tiempos, linewidth = 0.6)
+plt.xlabel("Position x")
+plt.ylabel("Time " + r'$\tau$')
+plt.title("Quantum trajectory for harmonic oscillator with " r"$\mu = 1$")
+plt.show()
 
 def histogram(data,xrange):
     deltax = 0.5*(xrange[1]-xrange[0])  # Anchura de cada bin
@@ -50,8 +56,6 @@ def probexp(x,data,xrange):
 def probfunction(x):
     return 0.59*np.exp(-1.1*x**2)
 
-plt.plot(data[0],tiempos)
-plt.show()
 
 xvalues, yvaluesexp = histogram(data,xrange)
 yvaluestheo = [probfunction(i) for i in xrange]
