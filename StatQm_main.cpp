@@ -6,23 +6,23 @@ Approach to QUantum Mechanics" */
 /* 1. Parámetros */
 // Parámetros físicos
 int main() {
-float mu = 3;
+float mu = sqrt(2);
 float lambda = 0.0;
-float M0 = 1.0;
+float M0 = 0.5;
 float pi = 3.1415;
-int N = 10000;
-float epsilon = 1; //(2*pi)/(20*pow(mu,2));
+int N = 51;
+float epsilon = 0.5; //(2*pi)/(20*pow(mu,2));
 float T = N*epsilon; 
 cout << epsilon << endl;
 
 // Parámetros Metrópolis
-int Ne = 300;
-int pMC = 5;
+int Ne = 100;
+int pMC = 10;
 int n = 10;
-double delta = 2*sqrt(epsilon);
+long double delta = 2*sqrt(epsilon);
 
 // Vector de posiciones 
-double positions[N]; 
+long double positions[N]; 
 int vecinos[N][2];
 
 // Acción y potencial 
@@ -41,7 +41,7 @@ mt19937 engine{rd()};
 // "Filter" MT engine's output to generate pseudo-random double values,
 // **uniformly distributed** on the closed interval [0, 1].
 // (Note that the range is [inclusive, inclusive].)
-uniform_real_distribution<double> uniform01{0.0, 1.0};
+uniform_real_distribution<long double> uniform01{0.0, 1.0};
 float x = uniform01(engine); //Ejemplo de generación de número aleatorio entre 0 y 1
 
 // Inicio de los vecinos
@@ -70,13 +70,13 @@ for (int p = 0; p < Ne; p++)
             {
                 for(int j = 0; j<n; j++)
                 {
-                    double oldpos = positions[i];
+                    long double oldpos = positions[i];
 
                     // Aspirante a nueva posicion 
-                    double newpos = oldpos + (uniform01(engine)*2*delta - delta); 
+                    long double newpos = oldpos + (uniform01(engine)*2*delta - delta); 
 
                     // Solo deltaS
-                    double deltaS = (M0/epsilon)*(pow(newpos,2) - pow(oldpos,2) - (newpos - oldpos)*
+                    long double deltaS = (M0/epsilon)*(pow(newpos,2) - pow(oldpos,2) - (newpos - oldpos)*
                                     (positions[vecinos[i][0]] + positions[vecinos[i][1]])) + 
                                     0.5*epsilon*pow(mu,2)*(pow(newpos,2) - pow(oldpos,2)) + 
                                     lambda*epsilon*(pow(newpos,4) - pow(oldpos,4));
@@ -85,7 +85,7 @@ for (int p = 0; p < Ne; p++)
                     if (deltaS < 0) {positions[i] = newpos;}
                     else
                     {
-                        double r = uniform01(engine);
+                        long double r = uniform01(engine);
                         if (exp(-deltaS) > r) {positions[i] = newpos;}
                         else {positions[i] = oldpos;}
                     }
