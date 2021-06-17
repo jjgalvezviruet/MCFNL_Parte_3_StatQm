@@ -10,14 +10,14 @@ float mu = sqrt(2);
 float lambda = 0.0;
 float M0 = 0.5;
 float pi = 3.1415;
-int N = 51;
+int N = 10000;
 float epsilon = 0.5; //(2*pi)/(20*pow(mu,2));
 float T = N*epsilon; 
 cout << epsilon << endl;
 
 // Parámetros Metrópolis
-int Ne = 100;
-int pMC = 10;
+int Ne = 300;
+int pMC = 5;
 int n = 10;
 long double delta = 2*sqrt(epsilon);
 
