@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import csv
 from sklearn.linear_model import LinearRegression
 
-with open('Energydata/Results9.csv') as file2:
+with open('Energydata/Results15.csv') as file2:
     csv_reader = csv.reader(file2, delimiter=',')
     line_count = 0
     data = []
@@ -78,18 +78,18 @@ for i in range(0,N):
     correlations.append(auxcorr)
 
 
-positivecorr = np.array(list(filter(all_positive,np.array(correlations[0:nvalues]).transpose())))
+positivecorr = np.array(list(filter(all_positive,np.array(correlations[0:(nvalues+3)]).transpose())))
 results = []
 for k in positivecorr:
     times = [i*parameters[1]*n for i in range(0,N)]
     
     """ Ajuste lineal de correlaciones """
-    logcorrelations = np.array([np.log(i) for i in k[0:nvalues]]).reshape(-1,1) #logaritmo correlaciones
-    regtimes = np.array([[i] for i in times[0:nvalues]])  # Tiempos usados para regresion
+    logcorrelations = np.array([np.log(i) for i in k[0:(nvalues)]]).reshape(-1,1) #logaritmo correlaciones
+    regtimes = np.array([[i] for i in times[0:(nvalues)]])  # Tiempos usados para regresion
     reg = LinearRegression().fit(regtimes,logcorrelations)  # Regresión lineal
     
     """Calculo de errores """
-    [ordenadaerror,pendienteerror] = errorregression([reg.coef_[0][0],reg.intercept_[0]],np.log(k[0:nvalues]),np.array(times[0:nvalues]))
+    [ordenadaerror,pendienteerror] = errorregression([reg.coef_[0][0],reg.intercept_[0]],np.log(k[0:(nvalues)]),np.array(times[0:(nvalues)]))
     
     
     results.append([[reg.coef_[0][0],pendienteerror],[reg.intercept_[0],ordenadaerror]])
@@ -106,11 +106,27 @@ fluctuations = stddeviation/abs(mediapendiente)
 print("E1-E0 = " + str(-mediapendiente) + ", Fluctuaciones = " + str(fluctuations))
 
 """ Representación gráfica """
-meancorrelations = [np.mean(i) for i in correlations]
+meancorrelations = [np.mean(i) for i in positivecorr.transpose()]
 
 plt.semilogy(times,  meancorrelations,'.')
 plt.semilogy(times, prediccion_fit([mediapendiente,mediaordenada],times),linestyle = '--', color = 'green')
 plt.show()
 
+""" Cálculo de E0 """
+datapositions = np.array(data).transpose()
+positionssquare = np.array([np.mean(pow(i,2)) for i in datapositions])
+positionsfouth = np.array([np.mean(pow(i,4)) for i in datapositions])
+Energies = pow(parameters[3],2)*positionssquare + 3*parameters[4]*positionsfouth
+meanEnergy = np.mean(Energies)
+stdEnergy = np.sqrt(np.mean(pow(Energies-meanEnergy,2))) 
+print("Energías 1")
+print("E0 = " + str(meanEnergy) + ", std = " + str(stdEnergy))
 
+Energies2 = np.array([pow(parameters[3],2)*pow(i,2) + 3*parameters[4]*pow(i,4) for i in datapositions])
+meanEnergies2 = np.array([np.mean(i) for i in Energies2])
+stdEnergies = np.array([np.sqrt(np.mean([pow(i-j,2) for i in Energies2])) for j in meanEnergies2])
+meanmeanEnergies2 = np.mean(Energies2)
+stdtotal = np.sqrt(sum(pow(stdEnergies,2)))/len(stdEnergies)
 
+print("Energías 2")
+print("E0 = " + str(meanmeanEnergies2) + ", std = " + str(stdtotal))

@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-with open('Probdataanarmonic/Results.csv') as file2:
+with open('Probdataanarmonic/Results1.csv') as file2:
     csv_reader = csv.reader(file2, delimiter=',')
     line_count = 0
     data = []
@@ -22,7 +22,7 @@ with open('Probdataanarmonic/Results.csv') as file2:
             line_count += 1
             
 """ Rangos en el eje x"""
-xrange = np.linspace(-1,1,30)
+xrange = np.linspace(-2.5,2.5,30)
 print(len(data)*len(data[0]))
 
 deltax = 0.5*(xrange[1]-xrange[0])
@@ -78,11 +78,9 @@ def probfunction(x,mu,epsilon):
 
 
 yvaluesexp ,yexperrors = totalhistogram(data,xrange)
-yvaluestheo = [probfunction(i,parameters[3],parameters[1]) for i in xrange]
-plt.plot(xrange, yvaluestheo, '--', color = 'blue', label = "Valores teóricos")
 plt.errorbar(xcenters, mean_bin_values, yerr= array_deviations, linestyle = '-', color = 'red', label = "Valores simulación")
 plt.ylabel(r'$|\psi_0(x)|^2$')
 plt.xlabel("Positions x")
-plt.title("Distribución probabilidad del estado fundamental, " + r'$\mu = $' + str(parameters[3]))
+plt.title("Distribución probabilidad del estado fundamental, " + " f = " + str(parameters[6]))
 plt.legend(loc = "upper right")
 plt.show()

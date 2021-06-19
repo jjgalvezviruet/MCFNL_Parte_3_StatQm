@@ -10,5 +10,6 @@ using namespace std;
 
 // Auxiliar functions
 void neighbors (int *p, int size);
+long double deltaV (long double xnew, long double xold, float mu, float lambda, float epsilon, float f, int type);
 
 #endif /* ISING_HEADER_H */

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import csv
 from sklearn.linear_model import LinearRegression
 
-with open('Energydata/Results9.csv') as file2:
+with open('Energydata/Results13.csv') as file2:
     csv_reader = csv.reader(file2, delimiter=',')
     line_count = 0
     data = []
@@ -61,7 +61,7 @@ def prediccion_fit(coefs,xvalues):
     return np.array([np.exp(i*pendiente+ordenada) for i in xvalues])
 
 
-def ajustelinealdatos(n = 1,N = 6, nvalues = 3,data = data):
+def ajustelinealdatos(n = 1,N = 8, n0 = 0, nvalues = 5,data = data):
     n              # Salto entre correlaciones consecutivas
     N              # N-1, numero de correlaciones calculadas
     nvalues        # Nº de datos para ajuste
@@ -79,17 +79,18 @@ def ajustelinealdatos(n = 1,N = 6, nvalues = 3,data = data):
     times = [i*parameters[1]*n for i in range(0,N)]
     
     """ Ajuste lineal de correlaciones """
-    logcorrelations = np.array([np.log(i) for i in meancorrelations[0:nvalues]]).reshape(-1,1) #logaritmo correlaciones
-    regtimes = np.array([[i] for i in times[0:nvalues]])  # Tiempos usados para regresion
+    logcorrelations = np.array([np.log(i) for i in meancorrelations[n0:nvalues]]).reshape(-1,1) #logaritmo correlaciones
+    regtimes = np.array([[i] for i in times[n0:nvalues]])  # Tiempos usados para regresion
     reg = LinearRegression().fit(regtimes,logcorrelations)  # Regresión lineal
     
     """Calculo de errores """
-    [ordenadaerror,pendienteerror] = errorregression([reg.coef_[0][0],reg.intercept_[0]],np.log(meancorrelations[0:nvalues]),np.array(times[0:nvalues]))
+    [ordenadaerror,pendienteerror] = errorregression([reg.coef_[0][0],reg.intercept_[0]],np.log(meancorrelations[n0:nvalues]),np.array(times[n0:nvalues]))
 
 
     """ Representacon datos """
     plt.semilogy(times,  meancorrelations,'.')
     plt.semilogy(times, prediccion_fit([reg.coef_[0][0],reg.intercept_[0]],times),linestyle = '--', color = 'green')
+    plt.grid(True, which="both", ls="-")
     plt.show()
     
     return [[reg.coef_[0][0],pendienteerror],[reg.intercept_[0],ordenadaerror]]

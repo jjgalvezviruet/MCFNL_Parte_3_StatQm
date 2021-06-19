@@ -32,14 +32,14 @@ mu0 = parameters[0][3]
 mu1 = parameters[1][3]
 mu2 = parameters[2][3]
 
-plt.plot(data[0][0][0:200],tiempos[0:200], linewidth = 0.6, \
-         linestyle = "--", color = "blue", label = r'\mu = ' +  str(mu0))
-plt.plot(data[1][0][0:200],tiempos[0:200], linewidth = 0.6, \
-         linestyle = "-.", color = "red", label = r'\mu = ' + str(mu1))
-plt.plot(data[2][0][0:200],tiempos[0:200], linewidth = 0.6, \
-         color = "green", label = r'\mu = ' + str(mu2))
+plt.plot(data[0][0][0:1000],tiempos[0:1000], linewidth = 0.6, \
+         linestyle = "--", color = "blue", label = r'$\mu$ = ' +  str(mu0))
+plt.plot(data[1][0][0:1000],tiempos[0:1000], linewidth = 0.6, \
+         linestyle = "-.", color = "red", label = r'$\mu$ = ' + str(mu1))
+plt.plot(data[2][0][0:1000],tiempos[0:1000], linewidth = 0.6, \
+         color = "green", label = r'$\mu$ = ' + str(mu2))
 plt.xlabel("Position x")
 plt.ylabel("Time " + r'$\tau$')
-plt.title("Quantum trajectory for harmonic oscillators")
+plt.title("Possible trajectories for harmonic oscillators")
 plt.legend(loc = "upper right")
 plt.show()

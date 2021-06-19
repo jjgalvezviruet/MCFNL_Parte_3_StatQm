@@ -6,18 +6,21 @@ Approach to QUantum Mechanics" */
 /* 1. Parámetros */
 // Parámetros físicos
 int main() {
-float mu = sqrt(2);
-float lambda = 0.0;
+float mu = 3; //sqrt(2);
+float lambda = 1;
 float M0 = 0.5;
 float pi = 3.1415;
-int N = 10000;
-float epsilon = 0.5; //(2*pi)/(20*pow(mu,2));
+int N = 500;
+float epsilon = 0.25; //(2*pi)/(20*pow(mu,2));
 float T = N*epsilon; 
 cout << epsilon << endl;
+int type = 2;       // Tipo de potencial
+float f = sqrt(2.5);        // Parámetro f de potencial
 
 // Parámetros Metrópolis
-int Ne = 300;
-int pMC = 5;
+int pMCNcool = int(N/10);
+int Ne = 100;
+int pMC = 5 + int(N/10);
 int n = 10;
 long double delta = 2*sqrt(epsilon);
 
@@ -53,15 +56,47 @@ for (int i = 0; i<N; i++)
     positions[i] = uniform01(engine)*6 -3;
 } 
 
-/* 3. Se genera un vector de posiciones distibuido según la distribución de 
-probabilidad obtenida mediante el Hamiltoniano del sistema usando el método de 
-metrópolis */
+
 
 /* Escritura de datos */
 ofstream file;
 file.open("Results.csv",std::fstream::app);
-file << N << "," << epsilon << "," << T << "," << mu << "," << lambda << "," << M0 << endl;
+file << N << "," << epsilon << "," << T << "," << mu << "," << lambda << "," << M0 << "," << f << "," << n << endl;
+/* 3. Se deja al algorimos evolucionar durante pMCcool pasos Monte Carlo para producir una
+configuración distribuida según la exponencial de la acción */
+for (int p = 0; p < pMCNcool; p++)
+    {
+    for (int k = 0; k<pMC; k++)
+        {
+        for (int i = 0; i<N; i++)
+            {
+                for(int j = 0; j<n; j++)
+                {
+                    long double oldpos = positions[i];
 
+                    // Aspirante a nueva posicion 
+                    long double newpos = oldpos + (uniform01(engine)*2*delta - delta); 
+
+                    // Solo deltaS
+                    long double deltaS = (M0/epsilon)*(pow(newpos,2) - pow(oldpos,2) - (newpos - oldpos)*
+                                    (positions[vecinos[i][0]] + positions[vecinos[i][1]])) + 
+                                    deltaV(newpos,oldpos,mu,lambda,epsilon,f,type);
+                    
+                    // Algoritmo aceptación/rechazo
+                    if (deltaS < 0) {positions[i] = newpos;}
+                    else
+                    {
+                        long double r = uniform01(engine);
+                        if (exp(-deltaS) > r) {positions[i] = newpos;}
+                        else {positions[i] = oldpos;}
+                    }
+                }
+            }
+        }
+    }
+
+/* Se deja al sistema evolucionar, tomando Ne medidas cada pMC pasos Monte Carlo y se vuelcan las posibles
+trayectorias a un archivo. */
 for (int p = 0; p < Ne; p++)
     {
     for (int k = 0; k<pMC; k++)
@@ -78,8 +113,7 @@ for (int p = 0; p < Ne; p++)
                     // Solo deltaS
                     long double deltaS = (M0/epsilon)*(pow(newpos,2) - pow(oldpos,2) - (newpos - oldpos)*
                                     (positions[vecinos[i][0]] + positions[vecinos[i][1]])) + 
-                                    0.5*epsilon*pow(mu,2)*(pow(newpos,2) - pow(oldpos,2)) + 
-                                    lambda*epsilon*(pow(newpos,4) - pow(oldpos,4));
+                                    deltaV(newpos,oldpos,mu,lambda,epsilon,f,type);
                     
                     // Algoritmo aceptación/rechazo
                     if (deltaS < 0) {positions[i] = newpos;}
